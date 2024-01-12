@@ -1,0 +1,25 @@
+[tool.poetry]
+name = "ecbrate"
+version = "0.1.0"
+description = ""
+authors = ["Matthias Erll <matthias@erll.de>"]
+
+[tool.poetry.dependencies]
+python = "^3.11"
+requests = "^2.31.0"
+redis = "^5.0.1"
+fastapi = "^0.109.0"
+uvicorn = {extras = ["standard"], version = "^0.25.0"}
+polars = "^0.20.3"
+freezegun = "^1.4.0"
+coverage = "^7.4.0"
+
+
+[tool.poetry.group.dev.dependencies]
+darker = "^1.7.2"
+pytest = "^7.4.4"
+requests-mock = "^1.11.0"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
