@@ -1,2 +1,4 @@
 /htmlcov/
 /.coverage
+/last_timestamps.json
+/data.parquet
