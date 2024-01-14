@@ -1,53 +1,40 @@
 import json
-from datetime import datetime
+import os
 from typing import Optional
 
 import polars as pl
 
-from .base import RatesCache
-from .data import RatesCacheData
-from ..ecb import UpdateTimestamps
+from .base import StoredRatesCache
 
 
-class FileCache(RatesCache):
+class FileCache(StoredRatesCache):
     def __init__(
         self,
-        path: Optional[str] = None,
-        data_filename: Optional[str] = None,
-        timestamps_filename: Optional[str] = None,
+        data_name: str = "data.parquet",
+        timestamps_name: str = "last_timestamps.json",
     ):
         super().__init__()
-        self.path = path or ""
-        self.data_filename = data_filename or "data.parquet"
-        self.timestamps_filename = timestamps_filename or "last_timestamps.json"
+        self.data_filename = data_name
+        self.timestamps_filename = timestamps_name
 
-    def load(self) -> None:
-        try:
-            data = pl.read_parquet(self.data_filename)
-            with open(self.timestamps_filename, "r") as cf:
-                timestamp_dict = json.load(cf)
-        except (IOError, ValueError):
+    def load_data(self) -> Optional[pl.DataFrame]:
+        if os.path.isfile(self.data_filename):
+            return pl.read_parquet(self.data_filename)
+        else:
             return None
-        self.data = RatesCacheData(
-            rates=data,
-            last_update=datetime.fromisoformat(timestamp_dict["last_update"]),
-            last_timestamps={
-                key: UpdateTimestamps(*values)
-                for key, values in timestamp_dict["last_timestamps"].items()
-            },
-        )
 
-    def save(self) -> None:
-        data = self.data
-        data.rates.write_parquet(self.data_filename)
+    def load_timestamps(self) -> Optional[dict[str, str | dict[str, dict[str, str]]]]:
+        if os.path.isfile(self.timestamps_filename):
+            with open(self.timestamps_filename, "r") as cf:
+                return json.load(cf)
+        else:
+            return None
+
+    def save_data(self, data: pl.DataFrame) -> None:
+        data.write_parquet(self.data_filename)
+
+    def save_timestamps(
+        self, timestamps: dict[str, str | dict[str, dict[str, str]]]
+    ) -> None:
         with open(self.timestamps_filename, "w") as cf:
-            json.dump(
-                {
-                    "last_update": data.last_update.isoformat(),
-                    "last_timestamps": {
-                        key: [timestamps.modified_since, timestamps.etag]
-                        for key, timestamps in data.last_timestamps.items()
-                    },
-                },
-                cf,
-            )
+            json.dump(timestamps, cf)
