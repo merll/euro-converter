@@ -123,7 +123,7 @@ class CurrencyCalculator:
         conversion_type: ConversionType,
         currency: str,
         values: list[tuple[date, Decimal]],
-        keep_order: bool = False,
+        keep_order: bool = True,
         decimals: Optional[int] = None,
     ):
         data = get_multi_df(values, add_row_index=keep_order)

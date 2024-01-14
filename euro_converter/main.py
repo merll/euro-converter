@@ -52,7 +52,7 @@ def convert_from_currency(
 def convert_multi_to_currency(
     currency: str,
     dates_values: list[tuple[date, Decimal]],
-    keep_order: Optional[bool] = False,
+    keep_order: Optional[bool] = True,
     decimals: Optional[int] = 3,
 ) -> list[tuple[date, Decimal]]:
     return calculator.convert_multiple(
@@ -68,7 +68,7 @@ def convert_multi_to_currency(
 def convert_multi_from_currency(
     currency: str,
     dates_values: list[tuple[date, Decimal]],
-    keep_order: Optional[bool] = False,
+    keep_order: Optional[bool] = True,
     decimals: Optional[int] = 3,
 ) -> list[tuple[date, Decimal]]:
     return calculator.convert_multiple(
