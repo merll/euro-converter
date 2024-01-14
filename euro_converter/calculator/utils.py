@@ -15,7 +15,7 @@ def get_single_df(currency_date: date, value: Decimal):
     ).set_sorted("date")
 
 
-def get_multi_df(data: list[[date, Decimal]], add_row_index: bool = False):
+def get_multi_df(data: list[[date, Decimal]], add_row_index: bool = False) -> pl.DataFrame:
     df = pl.DataFrame(
         data, schema={"date": pl.Date, "value": DECIMAL_TYPE}, orient="row"
     )
