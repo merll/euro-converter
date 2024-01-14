@@ -1,3 +1,4 @@
+import logging.config
 from datetime import date
 from decimal import Decimal
 from typing import Optional
@@ -5,14 +6,17 @@ from typing import Optional
 import uvicorn
 from fastapi import FastAPI
 
-from euro_converter.cache.filecache import FileCache
 from euro_converter.calculator import CurrencyCalculator, ConversionType
+from euro_converter.config import get_config
 
-app = FastAPI()
+app_config = get_config()
+logging.config.dictConfig(app_config.log_config)
 
-# file_cache = RedisRatesCache()
-file_cache = FileCache()
-calculator = CurrencyCalculator(cache=file_cache)
+app = FastAPI(
+    title="Euro Converter",
+    version="0.1.0",
+)
+calculator = CurrencyCalculator(cache=app_config.cache)
 
 
 @app.post("/update")
@@ -77,4 +81,9 @@ def convert_multi_from_currency(
 
 
 if __name__ == "__main__":
-    uvicorn.run(app, host="*", port=8000)
+    uvicorn.run(
+        app,
+        host=app_config.host,
+        port=app_config.port,
+        log_config=app_config.log_config,
+    )

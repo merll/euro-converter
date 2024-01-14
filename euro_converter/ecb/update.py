@@ -12,6 +12,12 @@ def update_from_ecb(
     update_type: UpdateType,
     request_timestamps: UpdateTimestamps,
 ) -> tuple[Optional[Iterator[dict[str, Any]]], UpdateTimestamps]:
+    log.info(
+        "Request %s update. Timestamp: %s; ETag: %s",
+        update_type.value,
+        request_timestamps.modified_since if request_timestamps else None,
+        request_timestamps.etag if request_timestamps else None,
+    )
     response, response_timestamps = get_data(update_type, request_timestamps)
     if response_timestamps:
         log.info(
