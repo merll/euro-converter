@@ -96,11 +96,11 @@ class CurrencyCalculator:
 
     def _merge_into(self, data: pl.DataFrame, currency: str) -> pl.DataFrame:
         self._check_cache()
-        date_rates = self.data.rates.select(
+        date_rates = self.data.rates.lazy().select(
             pl.col("date"), pl.col(currency).alias("rate")
         ).set_sorted("date")
-        merged = data.join_asof(date_rates, left_on="date", right_on="date")
-        return merged
+        merged = data.lazy().join_asof(date_rates, on="date")
+        return merged.collect()
 
     def convert(
         self,
