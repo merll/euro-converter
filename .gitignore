@@ -2,3 +2,4 @@
 /.coverage
 /last_timestamps.json
 /data.parquet
+__pycache__
