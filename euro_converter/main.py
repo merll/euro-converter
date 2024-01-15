@@ -85,5 +85,6 @@ if __name__ == "__main__":
         app,
         host=app_config.host,
         port=app_config.port,
+        log_level=app_config.log_level,
         log_config=app_config.log_config,
     )

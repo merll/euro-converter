@@ -13,6 +13,7 @@ class AppConfig:
     cache: RatesCache
     host: str
     port: int
+    log_level: str
     log_config: dict
 
 
@@ -25,15 +26,13 @@ def get_removing_prefix(d: Mapping, prefix: str) -> dict:
     }
 
 
-def get_log_config(log_level: str) -> dict:
-    if log_level:
-        log_level = log_level.lower()
-    else:
+def get_log_config(log_level: str) -> tuple[str, dict]:
+    if not log_level:
         log_level = "error"
     with open("logging.conf", "r") as f:
         log_config = yaml.safe_load(f)
     log_config["root"]["level"] = log_level.upper()
-    return log_config
+    return log_level.lower(), log_config
 
 
 def get_config() -> AppConfig:
@@ -52,10 +51,11 @@ def get_config() -> AppConfig:
             cache = RatesCache()
     else:
         cache = RatesCache()
-    log_config = get_log_config(config_vars.get("log_level"))
+    log_level, log_config = get_log_config(config_vars.get("log_level"))
     return AppConfig(
         cache=cache,
         host=config_vars.get("host", "*"),
         port=config_vars.get("port", 8000),
+        log_level=log_level,
         log_config=log_config,
     )
