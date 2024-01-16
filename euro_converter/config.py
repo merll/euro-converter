@@ -54,7 +54,7 @@ def get_config() -> AppConfig:
     log_level, log_config = get_log_config(config_vars.get("log_level"))
     return AppConfig(
         cache=cache,
-        host=config_vars.get("host", "*"),
+        host=config_vars.get("host", "0.0.0.0"),
         port=int(config_vars.get("port", 8080)),
         log_level=log_level,
         log_config=log_config,
