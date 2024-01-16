@@ -55,7 +55,7 @@ def get_config() -> AppConfig:
     return AppConfig(
         cache=cache,
         host=config_vars.get("host", "*"),
-        port=config_vars.get("port", 8000),
+        port=int(config_vars.get("port", 8080)),
         log_level=log_level,
         log_config=log_config,
     )
