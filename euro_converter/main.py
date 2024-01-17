@@ -19,6 +19,11 @@ app = FastAPI(
 calculator = CurrencyCalculator(cache=app_config.cache)
 
 
+@app.get("/")
+def root() -> str:
+    return "ok"
+
+
 @app.post("/update")
 def update() -> bool:
     return calculator.update()
