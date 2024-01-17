@@ -60,22 +60,22 @@ def test_update(
         "euro_converter.calculator.calc.update_from_ecb",
         update_func,
     )
-    calc = CurrencyCalculator(cache=RatesCache())
-    calc.data = RatesCacheData(
+    update_time = datetime.fromisoformat("2023-01-05T12:01:00")
+    cache = RatesCache()
+    cache.data = RatesCacheData(
         rates=pl.DataFrame(init_rates, schema=RATES_SCHEMA),
         last_update=last_update,
         last_timestamps={
             expected_update_type.value: UpdateTimestamps(modified_since="test1")
         },
     )
-    update_time = datetime.fromisoformat("2023-01-05T12:01:00")
     with freeze_time(update_time):
+        calc = CurrencyCalculator(cache)
         update_done = calc.update()
-    assert update_args[0] is expected_update_type
     if expected_update_type is UpdateType.FULL:
-        assert update_args[1] is None
+        assert update_args == [UpdateType.FULL, None]
     else:
-        assert update_args[1] == UpdateTimestamps(modified_since="test1")
+        assert update_args == [expected_update_type, UpdateTimestamps(modified_since="test1")]
 
     assert calc.data.rates is not None
     if update_rates is not None:
@@ -86,6 +86,7 @@ def test_update(
         assert not update_done
         assert calc.data.rates.rows(named=True) == RATES_ROWS[:1]
         assert calc.data.last_update == last_update
+    assert calc.last_cache_check == update_time
     if expected_update_type is UpdateType.FULL:
         assert calc.data.last_timestamps == {}
     else:

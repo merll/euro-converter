@@ -50,6 +50,7 @@ class CurrencyCalculator:
         except Exception:
             exc = sys.exc_info()
             log.warning("Failed to load from cache.", exc_info=exc)
+        self.last_cache_check = datetime.utcnow()
 
     def _save_cache(self):
         try:
@@ -73,10 +74,11 @@ class CurrencyCalculator:
             return False
 
         updated_df = get_parsed_rates_df(updated_data)
+        now = datetime.utcnow()
         if update_type is UpdateType.FULL:
             self.data = RatesCacheData(
                 rates=updated_df,
-                last_update=datetime.utcnow(),
+                last_update=now,
                 last_timestamps={},
             )
             log.info("Created new dataframe.")
@@ -84,8 +86,9 @@ class CurrencyCalculator:
             if response_timestamps:
                 data.last_timestamps[update_type.value] = response_timestamps
             data.rates = data.rates.update(updated_df, on="date", how="outer").sort("date")
-            data.last_update = datetime.utcnow()
+            data.last_update = now
             log.info("Merged updated dataframe.")
+        self.last_cache_check = now
         self._save_cache()
         return True
 
@@ -93,6 +96,8 @@ class CurrencyCalculator:
         now = datetime.utcnow()
         if not self.last_cache_check or self.last_cache_check + CACHE_TIMEOUT < now:
             self._load_cache()
+            if not self.data:
+                self.update()
 
     def _merge_into(self, data: pl.DataFrame, currency: str) -> pl.DataFrame:
         self._check_cache()
