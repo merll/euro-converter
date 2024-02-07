@@ -12,13 +12,12 @@ fastapi = "^0.109.0"
 uvicorn = {extras = ["standard"], version = "^0.26.0"}
 polars = "^0.20.3"
 freezegun = "^1.4.0"
-coverage = "^7.4.0"
-
 
 [tool.poetry.group.dev.dependencies]
 darker = "^1.7.2"
 pytest = "^7.4.4"
 requests-mock = "^1.11.0"
+coverage = "^7.4.0"
 
 [build-system]
 requires = ["poetry-core"]
