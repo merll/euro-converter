@@ -34,7 +34,6 @@ class CurrencyCalculator:
     def __init__(self, cache: RatesCache):
         self.cache = cache
         self.last_cache_check = None
-        self._check_cache()
 
     @property
     def data(self) -> Optional[RatesCacheData]:
