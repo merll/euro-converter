@@ -11,10 +11,6 @@ from euro_converter.cache.filecache import FileCache
 @dataclass
 class AppConfig:
     cache: RatesCache
-    host: str
-    port: int
-    log_level: str
-    log_config: dict
 
 
 def get_removing_prefix(d: Mapping, prefix: str) -> dict:
@@ -24,15 +20,6 @@ def get_removing_prefix(d: Mapping, prefix: str) -> dict:
         for key, value in d.items()
         if key.lower().startswith(prefix)
     }
-
-
-def get_log_config(log_level: str) -> tuple[str, dict]:
-    if not log_level:
-        log_level = "error"
-    with open("logging.conf", "r") as f:
-        log_config = yaml.safe_load(f)
-    log_config["root"]["level"] = log_level.upper()
-    return log_level.lower(), log_config
 
 
 def get_config() -> AppConfig:
@@ -51,11 +38,6 @@ def get_config() -> AppConfig:
             cache = RatesCache()
     else:
         cache = RatesCache()
-    log_level, log_config = get_log_config(config_vars.get("log_level"))
     return AppConfig(
         cache=cache,
-        host=config_vars.get("host", "0.0.0.0"),
-        port=int(config_vars.get("port", 8080)),
-        log_level=log_level,
-        log_config=log_config,
     )

@@ -1,4 +1,3 @@
-import logging.config
 from datetime import date
 from decimal import Decimal
 from typing import Optional
@@ -10,7 +9,6 @@ from euro_converter.calculator import CurrencyCalculator, ConversionType
 from euro_converter.config import get_config
 
 app_config = get_config()
-logging.config.dictConfig(app_config.log_config)
 
 app = FastAPI(
     title="Euro Converter",
@@ -88,8 +86,4 @@ def convert_multi_from_currency(
 if __name__ == "__main__":
     uvicorn.run(
         app,
-        host=app_config.host,
-        port=app_config.port,
-        log_level=app_config.log_level,
-        log_config=app_config.log_config,
     )
